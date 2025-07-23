@@ -6,7 +6,7 @@ This project is a refactored pipeline of an initial MSc project, built to be rep
 
 # Requires (definitely not finished!):
 
-BioPython
-Hugging Face
-EvoProtGrad
-Phenix Molprobity
+- BioPython
+- Hugging Face
+- EvoProtGrad
+- Phenix Molprobity
