@@ -10,9 +10,10 @@ def main():
 
     protein_family = args.family
     fasta_path = f"./data/initial_proteins/{protein_family}/combined_{protein_family}s.fasta"
-    output_path = f"./data/initial_proteins/{protein_family}/{protein_family}_esm2_embeddings.npz"
+    embedding_output_path = f"./data/initial_proteins/{protein_family}/{protein_family}_esm2_embeddings.npz"
 
     embed_fasta(fasta_path, output_path)
 
 if __name__ == "__main__":
     main()
+
