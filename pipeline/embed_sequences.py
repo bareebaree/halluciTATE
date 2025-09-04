@@ -1,19 +1,3 @@
-"""
-### OPTIONAL SCRIPT ###
-
-This script is an optional argument, and is used for replicating the research step, if it is necessary to embed and cluster families to ensure they are distant.
-If there is no need to select proteins by distance, then this can be skipped.
-
-This script embeds a strings of amino acids into a numerical embedding sequence, so they can be clustered downstream.
-
-This utilises the ESM tokeniser to do so, a pretrained model.
-
-The output of this script is the embeddings of all protein sequences saved as a numpy NPZ file.
-
-
-
-"""
-
 
 from transformers import EsmModel, EsmTokenizer
 import torch
@@ -69,4 +53,5 @@ def embed_fasta(fasta_path: str, embedding_output_path: str):
     os.makedirs(os.path.dirname(embedding_output_path), exist_ok=True)
     np.savez_compressed(embedding_output_path,
                         names=names, embeddings=np.vstack(embeddings))
+
     print(f"Saved embeddings to {embedding_output_path}")
