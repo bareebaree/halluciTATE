@@ -32,7 +32,7 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
     names = data["names"]
     embeddings = data["embeddings"]
 
-    print(f"📦 Loaded {len(embeddings)} embeddings for {protein_family}")
+    print(f"Loaded {len(embeddings)} embeddings for {protein_family}")
 
     # Run KMeans clustering
     kmeans = KMeans(n_clusters=k, random_state=42)
@@ -43,7 +43,7 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
     df = pd.DataFrame({"name": names, "cluster": labels})
     cluster_csv = f"./data/initial_proteins/{protein_family}/{protein_family}_cluster_assignments.csv"
     df.to_csv(cluster_csv, index=False)
-    print(f"💾 Saved cluster assignments to {cluster_csv}")
+    print(f"Saved cluster assignments to {cluster_csv}")
 
     # Compute pairwise centroid distances
     dist_matrix = pairwise_distances(centroids)
@@ -55,7 +55,7 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
     )
     top_10 = distances[:10]
 
-    print("📊 Top 10 maximally distant cluster pairs:")
+    print("Top 10 maximally distant cluster pairs:")
     for i, j, d in top_10:
         print(f"  Cluster {i} ↔ Cluster {j} → Distance: {d:.4f}")
 
@@ -88,7 +88,7 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
 
     tsne_outfile = f"./data/initial_proteins/{protein_family}/tsne_top10_distant_clusters.png"
     plt.savefig(tsne_outfile, dpi=300)
-    print(f"🖼️ Saved t-SNE plot to {tsne_outfile}")
+    print(f"Saved t-SNE plot to {tsne_outfile}")
 
     # Pick closest-to-centroid representatives
     closest_sequences = []
@@ -104,7 +104,7 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
     closest_df = pd.DataFrame(closest_sequences)
     closest_csv = f"./data/initial_proteins/{protein_family}/closest_to_centroid.csv"
     closest_df.to_csv(closest_csv, index=False)
-    print(f"💾 Saved closest-to-centroid list to {closest_csv}")
+    print(f" Saved closest-to-centroid list to {closest_csv}")
 
     # Copy FASTA files for chosen representatives
     fasta_src = f"./data/initial_proteins/{protein_family}/{protein_family}_fastas"
@@ -117,8 +117,8 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
         dst_file = os.path.join(fasta_dst, f"{pdb_id}.fasta")
         if os.path.exists(src_file):
             shutil.copy(src_file, dst_file)
-            print(f"📂 Copied {pdb_id}.fasta → most_distant_sequences/")
+            print(f"Copied {pdb_id}.fasta → most_distant_sequences/")
         else:
-            print(f"⚠️ Missing FASTA for: {pdb_id}")
+            print(f"Missing FASTA for: {pdb_id}")
 
-    print("✅ Clustering + visualisation complete.")
+    print("Clustering + visualisation complete.")
