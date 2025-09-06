@@ -1,25 +1,34 @@
-# main.py
+# pipeline/__main__.py
 
 import argparse
-from pipeline.embed import embed_fasta
-from pipeline.cluster import run_clustering_and_analysis
+from .embed_sequences import embed_family
+from .cluster_embeddings import run_cluster_and_analysis
+import subprocess
+import os
 
 def main():
     parser = argparse.ArgumentParser(description="Protein pipeline")
     parser.add_argument("--family", type=str, required=True, help="Protein family name")
-    parser.add_argument("--stage", choices=["embed", "cluster", "all"], default="all",
-                        help="Which pipeline stage to run")
-
+    parser.add_argument(
+        "--stage",
+        choices=["embed", "cluster", "evolve", "all"],
+        default="all",
+        help="Which pipeline stage to run",
+    )
+    parser.add_argument("--k", type=int, default=10, help="Number of clusters (for clustering stage)")
     args = parser.parse_args()
+
     protein_family = args.family
 
     if args.stage in ["embed", "all"]:
-        fasta_path = f"./data/initial_proteins/{protein_family}/combined_{protein_family}s.fasta"
-        embedding_output_path = f"./data/initial_proteins/{protein_family}/{protein_family}_esm2_embeddings.npz"
-        embed_fasta(fasta_path, embedding_output_path)
+        embed_family(protein_family)
 
     if args.stage in ["cluster", "all"]:
-        run_clustering_and_analysis(protein_family)
+        run_cluster_and_analysis(protein_family, k=args.k)
+
+    if args.stage in ["evolve", "all"]:
+        evo_script = os.path.join("pipeline", "initialise_evo_prot_grad.py")
+        subprocess.run(["python", evo_script, "--family", protein_family], check=True)
 
 if __name__ == "__main__":
     main()
