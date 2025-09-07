@@ -17,7 +17,7 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
     """
     Runs K-means clustering on ESM2 embeddings of a given protein family,
     identifies maximally distant clusters, saves plots and CSVs,
-    and copies representative FASTAs into most_distant_sequences/.
+    and copies representative FASTAs into most_distant_sequences.
 
     Parameters
     ----------
@@ -36,11 +36,11 @@ def run_cluster_and_analysis(protein_family: str, k: int = 10):
 
     # Run KMeans clustering
     kmeans = KMeans(n_clusters=k, random_state=42)
-    labels = kmeans.fit_predict(embeddings)
-    centroids = kmeans.cluster_centers_
+    labels = kmeans.fit_predict(embeddings) # clusters 
+    centroids = kmeans.cluster_centers_ # co-ordinates where each row is a centroid, and columns are co-ordinates
 
     # Save cluster assignments
-    df = pd.DataFrame({"name": names, "cluster": labels})
+    df = pd.DataFrame({"name": names, "cluster": labels}) # assigns protein names to respective clusters
     cluster_csv = f"./data/initial_proteins/{protein_family}/{protein_family}_cluster_assignments.csv"
     df.to_csv(cluster_csv, index=False)
     print(f"Saved cluster assignments to {cluster_csv}")
