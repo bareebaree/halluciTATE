@@ -10,3 +10,7 @@ Work is currently in progress to refactor existing code. Bear with me.
 - Hugging Face
 - EvoProtGrad
 - Phenix Molprobity
+
+# EvoProtGrad
+
+I would recommend using a high performance cluster to use EvoProtGrad this way with the larger expert models. I used a Tesla A100 and it could take a couple of days to get 10 proteins in a family to run until convergence.
