@@ -18,21 +18,22 @@ def _load_model():
     if _model is None:
         _device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f" Using device: {_device}")
-        _tokeniser = EsmTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D")
-        _model = EsmModel.from_pretrained("facebook/esm2_t33_650M_UR50D").to(_device)
+        _tokeniser = EsmTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
+        _model = EsmModel.from_pretrained("facebook/esm2_t6_8M_UR50D").to(_device)
         _model.eval()
     return _device, _tokeniser, _model
 
 def embed_sequence(seq: str) -> np.ndarray:
     """
-    Unpacks, device, tokeniser variables from previous function.
-    Encodes input tokens into pytorch tensors
-    Moves each tensor in the k:v dictionary into the device
-    Input tensors to model
-    Get tensor of shape (batch_size, seq_length, hidden_dim) where hidden_dim is 1280 in ESM-2 650M, take mean across residues, created fixed size vector and move to np array on cpu
-    
+    Encode a protein sequence with ESM-2 and return a fixed-length embedding.
+    Truncates sequences longer than 1022 residues to avoid model index errors.
     """
-    
+    MAX_TOKENS = 1022  # reserve room for BOS/EOS tokens
+
+    # Truncate too-long sequences
+    if len(seq) > MAX_TOKENS:
+        seq = seq[:MAX_TOKENS]
+
     device, tokeniser, model = _load_model()
     tokens = tokeniser(seq, return_tensors="pt", add_special_tokens=True)
     tokens = {k: v.to(device) for k, v in tokens.items()}
@@ -40,6 +41,7 @@ def embed_sequence(seq: str) -> np.ndarray:
         output = model(**tokens)
     embedding = output.last_hidden_state.mean(dim=1).squeeze().cpu().numpy()
     return embedding
+
 
 def embed_family(protein_family: str):
     """
