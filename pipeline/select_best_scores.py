@@ -3,7 +3,8 @@
 """
 Summarise EvoProtGrad master logs by selecting the
 highest-scoring sequence per iteration for each pdb_id.
-Outputs both a CSV and a FASTA file.
+Outputs both a CSV and a FASTA file, and also extracts the
+final variant sequence (highest iteration per pdb_id).
 """
 
 import os
@@ -13,7 +14,8 @@ import pandas as pd
 def run_summary(family: str, results_dir: str = "./results") -> None:
     """
     Select the highest-scoring sequence from each iteration for every pdb_id.
-    Save results as both CSV and FASTA.
+    Save results as both CSV and FASTA. Also extract the final variant sequence
+    (highest iteration per pdb_id) into a separate CSV.
 
     Parameters
     ----------
@@ -69,5 +71,14 @@ def run_summary(family: str, results_dir: str = "./results") -> None:
             header = f">{pdb_id}|iter={iteration}|score={score:.4f}"
             fasta_file.write(f"{header}\n{sequence}\n")
 
+    # Extract final variant sequence per pdb_id (max iteration)
+    final_variants = best_rows.loc[
+        best_rows.groupby("pdb_id")["iteration"].idxmax()
+    ].reset_index(drop=True)
+
+    final_csv = os.path.join(results_dir, f"{family}_variant_sequences.csv")
+    final_variants.to_csv(final_csv, index=False)
+
     print(f"Summary CSV saved to {output_csv}")
     print(f"FASTA file saved to {fasta_path}")
+    print(f"Final variant CSV saved to {final_csv}")

@@ -1,10 +1,19 @@
 # pipeline/temberture_eval.py
-import os, sys
+# -*- coding: utf-8 -*-
+"""
+Run TemBERTure evaluation on a CSV of sequences.
+Processes one replica at a time to avoid GPU OOM,
+then merges results and computes average melt temp.
+"""
+
+import os
+import sys
+import argparse
 import pandas as pd
+import torch
 
 # User should edit this path in the README instructions
 temBERTure_path = "/mnt/c/Users/james/Masters_Degree/Thesis/protein_language_model_project/src/TemBERTure"
-
 
 if os.path.exists(temBERTure_path):
     sys.path.append(temBERTure_path)
@@ -16,52 +25,88 @@ else:
 
 from temBERTure import TemBERTure
 
-def run_temBERTure(protein_family: str, results_dir: str = "./results"):
+
+def run_temBERTure(input_csv: str, results_dir: str = "./results") -> None:
     """
-    Run TemBERTure evaluation on EvoProtGrad best-iteration outputs for a protein family.
-    Saves per-sequence predictions and cumulative scores as CSVs.
+    Run TemBERTure evaluation on a CSV of sequences, one replica at a time.
+
+    Parameters
+    ----------
+    input_csv : str
+        Path to input CSV file. Must contain a 'sequence' column.
+    results_dir : str, optional
+        Base results directory. Outputs will go to results/temberture_results.
     """
-    input_csv = os.path.join(
-        results_dir, f"{protein_family}_best_scores_per_iteration.csv"
-    )
     if not os.path.exists(input_csv):
-        raise FileNotFoundError(f"Missing EvoProtGrad results CSV: {input_csv}")
+        raise FileNotFoundError(f"Missing input CSV: {input_csv}")
 
     df = pd.read_csv(input_csv)
+    if "sequence" not in df.columns:
+        raise ValueError(f"Input file missing 'sequence' column: {input_csv}")
 
-    # Initialise three replicas
-    replicas = [
-        TemBERTure(adapter_path="./temBERTure_TM/replica1/", device="cuda", batch_size=16, task="regression"),
-        TemBERTure(adapter_path="./temBERTure_TM/replica2/", device="cuda", batch_size=16, task="regression"),
-        TemBERTure(adapter_path="./temBERTure_TM/replica3/", device="cuda", batch_size=16, task="regression"),
-    ]
+    # Prepare output directory
+    output_dir = os.path.join(results_dir, "temberture_results")
+    os.makedirs(output_dir, exist_ok=True)
 
-    sequence_results = []
-    cumulative_scores = {}
+    # Resolve adapter paths relative to temBERTure_path
+    adapter_base = os.path.join(temBERTure_path, "temBERTure_TM")
+    replica_paths = {
+        "melt_temp_replica1": os.path.join(adapter_base, "replica1/"),
+        "melt_temp_replica2": os.path.join(adapter_base, "replica2/"),
+        "melt_temp_replica3": os.path.join(adapter_base, "replica3/"),
+    }
 
-    for _, row in df.iterrows():
-        pdb_id = row["pdb_id"]
-        iteration = row["iteration"]
-        sequence = row["sequence"]
+    # Copy base dataframe so we can append predictions
+    results_df = df.copy()
 
-        preds = [rep.predict(sequence)[0] for rep in replicas]
-        avg_prediction = sum(preds) / len(preds)
+    # Run one replica at a time
+    for col_name, adapter_path in replica_paths.items():
+        print(f"Running predictions for {col_name} from {adapter_path}...")
 
-        sequence_results.append({
-            "pdb_id": pdb_id,
-            "iteration": iteration,
-            "sequence": sequence,
-            "avg_prediction": avg_prediction,
-        })
+        model = TemBERTure(
+            adapter_path=adapter_path,
+            device="cuda",
+            batch_size=1,
+            task="regression",
+        )
 
-        cumulative_scores[pdb_id] = cumulative_scores.get(pdb_id, 0.0) + avg_prediction
+        preds = []
+        for seq in results_df["sequence"]:
+            pred = model.predict(seq)[0]
+            preds.append(pred)
 
-    # Save outputs
-    seq_outfile = os.path.join(results_dir, f"{protein_family}_temberture_sequence_predictions.csv")
-    pd.DataFrame(sequence_results).to_csv(seq_outfile, index=False)
+        results_df[col_name] = preds
 
-    cum_outfile = os.path.join(results_dir, f"{protein_family}_temberture_cumulative_scores.csv")
-    pd.DataFrame([{"pdb_id": k, "cumulative_score": v} for k, v in cumulative_scores.items()]).to_csv(cum_outfile, index=False)
+        # Free GPU memory
+        del model
+        torch.cuda.empty_cache()
 
-    print(f"Saved per-sequence predictions → {seq_outfile}")
-    print(f"Saved cumulative scores → {cum_outfile}")
+        # Save intermediate results
+        base_name = os.path.splitext(os.path.basename(input_csv))[0]
+        interim_out = os.path.join(output_dir, f"{base_name}_{col_name}.csv")
+        results_df.to_csv(interim_out, index=False)
+        print(f"Saved {col_name} predictions → {interim_out}")
+
+    # Compute average melt temp
+    results_df["avg_melt_temp"] = results_df[
+        ["melt_temp_replica1", "melt_temp_replica2", "melt_temp_replica3"]
+    ].mean(axis=1)
+
+    # Save final combined CSV
+    final_out = os.path.join(output_dir, f"{base_name}_melt_temps.csv")
+    results_df.to_csv(final_out, index=False)
+    print(f"Saved final combined predictions → {final_out}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run TemBERTure evaluation on a CSV of sequences (one replica at a time).")
+    parser.add_argument("input_csv", type=str, help="Path to input CSV (must contain a 'sequence' column)")
+    parser.add_argument(
+        "--results_dir",
+        type=str,
+        default="./results",
+        help="Base results directory (default: ./results)",
+    )
+
+    args = parser.parse_args()
+    run_temBERTure(args.input_csv, results_dir=args.results_dir)
