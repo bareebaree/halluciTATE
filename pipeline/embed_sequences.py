@@ -18,8 +18,8 @@ def _load_model():
     if _model is None:
         _device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f" Using device: {_device}")
-        _tokeniser = EsmTokenizer.from_pretrained("facebook/esm2_t6_8M_UR50D")
-        _model = EsmModel.from_pretrained("facebook/esm2_t6_8M_UR50D").to(_device)
+        _tokeniser = EsmTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D")
+        _model = EsmModel.from_pretrained("facebook/esm2_t33_650M_UR50D").to(_device)
         _model.eval()
     return _device, _tokeniser, _model
 
@@ -70,3 +70,4 @@ def embed_family(protein_family: str):
 
     np.savez_compressed(out_file, names=names, embeddings=np.vstack(embeddings))
     print(f"Saved embeddings to {out_file}")
+
