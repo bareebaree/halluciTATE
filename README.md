@@ -14,7 +14,23 @@ Work is currently in progress to refactor existing code. Bear with me.
 - Hugging Face
 - EvoProtGrad
 - Phenix Molprobity
+- Python 3.9
+- Python 3.12
 
 # EvoProtGrad
 
 I would recommend using a high performance cluster to use EvoProtGrad this way with the larger expert models. I used a Tesla A100 and it could take a couple of days to get 10 proteins in a family to run until convergence.
+
+
+# Usage 
+
+# Downloading fastas
+After downloading your desired PDB IDs from interprot in TSV format, run
+
+python -m pipeline.download_fastas
+
+# Embed sequences
+
+# Cluster sequences
+Example usage below
+python pipeline.py --protein_family kinase --clusters 10 --output results/kinase
