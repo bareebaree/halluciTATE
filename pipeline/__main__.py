@@ -20,12 +20,6 @@ def download_family(protein_family: str, tsv_path: str) -> None:
         Name of the protein family used to construct the output directory path.
     tsv_path : str
         Path to a TSV file with a column 'Accession' containing PDB IDs.
-
-    Returns
-    -------
-    None
-        FASTA files are written to:
-        ./data/initial_proteins/{protein_family}/{protein_family}_fastas
     """
     out_dir = (
         f"./data/initial_proteins/{protein_family}/"
@@ -66,14 +60,6 @@ def download_family(protein_family: str, tsv_path: str) -> None:
 def main() -> None:
     """
     Command-line entrypoint for the pipeline.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
     """
     parser = argparse.ArgumentParser(description="Protein pipeline")
     parser.add_argument(
@@ -84,7 +70,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--stage",
-        choices=["download", "embed", "cluster", "evolve", "all"],
+        choices=["download", "embed", "cluster", "evolve", "summarise", "temberture", "all"],
         default="all",
         help="Which pipeline stage to run"
     )
@@ -119,13 +105,20 @@ def main() -> None:
     if args.stage in ["cluster", "all"]:
         run_cluster_and_analysis(protein_family, k=args.k)
 
-
-
     if args.stage in ["evolve", "all"]:
         subprocess.run(
-           [sys.executable, "-m", "pipeline.initialise_evo_prot_grad", "--family", protein_family],
-           check=True
-    )
+            [sys.executable, "-m", "pipeline.initialise_evo_prot_grad", "--family", protein_family],
+            check=True
+        )
+
+    elif args.stage == "summarise":
+    	from .select_best_scores import run_summary
+    	run_summary(args.family)
+
+
+    elif args.stage == "temberture":
+        from .run_temberture import run_temBERTure
+        run_temBERTure(protein_family)
 
 
 if __name__ == "__main__":
