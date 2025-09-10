@@ -24,13 +24,40 @@ I would recommend using a high performance cluster to use EvoProtGrad this way w
 
 # Usage 
 
-# Downloading fastas
+# 1. Downloading fastas
 After downloading your desired PDB IDs from interprot in TSV format, run
 
 python -m pipeline.download_fastas
 
-# Embed sequences
-
-# Cluster sequences
+# 2. Embed sequences
 Example usage below
-python pipeline.py --protein_family kinase --clusters 10 --output results/kinase
+
+python -m pipeline.embed --family kinase
+
+# 3. Cluster sequences
+Example usage below
+
+python -m pipeline --family kinase --clusters 10
+
+# 4. Evolve
+
+python -m pipeline --family kinase --stage evolve
+
+# 5. Select best score from each iteration of evolve loop
+
+python -m pipeline --family kinase --stage summarise
+
+# 6. Convert fasta to CSV for analysis
+python pipeline/fasta_to_csv.py
+
+# 7. Run temBERTure
+
+python -m pipeline --family kinase --stage temberture
+
+
+# NOTEBOOK SECTION FOR ANALYSIS AND VISUALISATION
+
+
+
+
+
