@@ -1,6 +1,4 @@
-10-09-2025
-
-I will finish this soon! I am very tired and have been at this for a while! Needs updating for usage, instructions and requirements.
+Report is currently not published as it is under review, but the code for replicating the analysis is contained in this repo.
 
 # halluciTATE
 
@@ -8,21 +6,27 @@ This project is a refactored pipeline of an initial MSc project, built to be rep
 
 Work is currently in progress to refactor existing code. Bear with me.
 
-# Requires (definitely not finished!):
+# Requires:
 
 - BioPython
 - Hugging Face
 - EvoProtGrad
-- Phenix Molprobity
+- Phenix Molprobity (clashscore)
 - Python 3.9
 - Python 3.12
 - temBERTure (requires separate environment with python 3.9)
+  
+Follow instructions for Phenix Molprobity, Hugging Face, EvoProtGrad, and temBERTure from their respective publishers.
+
+
 # EvoProtGrad
 
 I would recommend using a high performance cluster to use EvoProtGrad this way with the larger expert models. I used a Tesla A100 and it could take a couple of days to get 10 proteins in a family to run until convergence.
 
 
 # Usage 
+
+Run from a root directory. ./pipeline, ./analysis expect ./data, ./results, and ./supplementary_data to be in ./root (or whatever you call it) 
 
 # 1. Downloading fastas
 After downloading your desired PDB IDs from interprot in TSV format, run
@@ -55,7 +59,11 @@ python pipeline/fasta_to_csv.py
 python -m pipeline --family kinase --stage temberture
 
 
-# NOTEBOOK SECTION FOR ANALYSIS AND VISUALISATION
+# 8 Analysis and visualisation
+
+Going through the analyse_sequences.ipynb notebook will reproduce the analysis in the paper
+
+Going through the analyse_structures.ipynb after analyse_sequencess will reproduce the analysis on structures in the paper. Foldseek should be installed independently.
 
 
 
