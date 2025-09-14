@@ -65,6 +65,8 @@ Going through the analyse_sequences.ipynb notebook will reproduce the analysis i
 
 Going through the analyse_structures.ipynb after analyse_sequencess will reproduce the analysis on structures in the paper. Foldseek should be installed independently.
 
+Replace the hard-coded filepaths in with where many of these additional programmes have stored data and results in these notebooks. In future builds I will build relative paths in to handle these.
+
 
 
 
