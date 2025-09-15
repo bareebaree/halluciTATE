@@ -61,6 +61,8 @@ python -m pipeline --family kinase --stage temberture
 
 # 8 Analysis and visualisation
 
+Unzip the foldseek results .zip file for this step.
+
 Going through the analyse_sequences.ipynb notebook will reproduce the analysis in the paper
 
 Going through the analyse_structures.ipynb after analyse_sequencess will reproduce the analysis on structures in the paper. Foldseek should be installed independently.
