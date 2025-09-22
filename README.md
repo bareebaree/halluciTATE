@@ -1,6 +1,12 @@
-Report is currently not published as it is under review, but the code for replicating the analysis is contained in this repo.
 
 # halluciTATE
+This project sets out to identify features of hallucinations in AI generated protein sequences, and by extension, structures.
+The first step, identifying features of hallucinations has been finished. The next step, is to identify knowledge neurons that lead to decision making for making models hallucinate.
+
+The below image demonstrates where in a sequence hallucinations are likely in purposefully hallucinated, overfitted sequences. Blue demonstrates a region with lower aln-TM score on Foldseek, orange, higher. Green lines demonstrate homorepeat motifs, which are a common feature in hallucinations.
+
+<img width="582" height="343" alt="image" src="https://github.com/user-attachments/assets/f777a655-2a4c-4614-ad67-5c2c3e94aa33" />
+
 
 This project is a refactored pipeline of an initial MSc project, built to be reproducible and scalable for input of large numbers of proteins. The aim of the project is to be able to identify AI generated proteins that are hallucinated. It is also a pun on my surname.
 
