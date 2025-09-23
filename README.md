@@ -36,7 +36,7 @@ Run from a root directory. ./pipeline, ./analysis expect ./data, ./results, and 
 # 1. Downloading fastas
 After downloading your desired PDB IDs from interprot in TSV format, run
 
-python -m pipeline.download_fastas
+python -m pipeline.download_fastas --tsv <insert filepath>
 
 # 2. Embed sequences
 Example usage below
