@@ -1,0 +1,16 @@
+#Project Overview
+This project is divided into three major phases:
+
+1. Purposefully making a model hallucinate proteins, and identifying common features of hallucinated proteins.
+2. Identifying knowledge neurons and looking in the attention matrices to see how models are making decisions that lead to hallucinations.
+3. Building a classifier to identify hallucinated proteins.
+
+Phase 1 has been finished, and phase 2 is about to begin.
+
+
+In terms of code, phase 1 is split into two parts: pipeline (produces hallucinations), and analysis (wide series of evaluation metrics and visualisation to identify what the common features are).
+
+In the ./pipeline folder, the __main__.py file allows large parts of the pipeline to be run from the command line, and requires a TSV of desired PDB IDs from Interprot as input.
+
+Specifically, __main__.py allows for the steps of downloading relevant fasta files for input, embedding them into vector space, clustering them with K-means, evolving the proteins, then running melt temperature predicction on them all to be done through the command line, taking the desired protein family as input.
+
