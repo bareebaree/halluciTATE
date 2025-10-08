@@ -13,13 +13,7 @@ This project is a refactored pipeline of an initial MSc project, built to be rep
 
 # Requires:
 
-- BioPython
-- Hugging Face
-- EvoProtGrad
-- Phenix Molprobity (clashscore)
-- Python 3.9
-- Python 3.12
-- temBERTure (requires separate environment with python 3.9)
+Requirements are in the .yml files in the repo. For almost all steps, the general_environment.yml should be used. For the temBERTure step, the temberture_environment.yml should be used.
   
 Follow instructions for Phenix Molprobity, Hugging Face, EvoProtGrad, and temBERTure from their respective publishers.
 
