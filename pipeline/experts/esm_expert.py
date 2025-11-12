@@ -31,8 +31,8 @@ class EsmExpert(ProteinLMExpert):
             ValueError: If either `model` or `tokenizer` is not specified.
         """
         if model is None and tokenizer is None:
-            model = EsmForMaskedLM.from_pretrained("facebook/esm2_t6_650M_UR50D")
-            tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t6_650M_UR50D")
+            model = EsmForMaskedLM.from_pretrained("facebook/esm2_t33_650M_UR50D")
+            tokenizer = AutoTokenizer.from_pretrained("facebook/esm2_t33_650M_UR50D")
         elif model is None or tokenizer is None:
             raise ValueError("EsmExpert requires both `model` and `tokenizer` to be specified.")
         super().__init__(
